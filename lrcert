@@ -1,0 +1,51 @@
+#!/bin/bash
+
+listRealCerts() {
+        user=$1
+        getdata=$(whmapi1 listcrts registered=1 user=$user --output=json 2> /dev/null)
+        lines=$(echo $getdata | jq --raw-output .data.crt[].is_self_signed | wc -l)
+        for (( i=0; i<$lines; i++))
+                do
+                        selfsigned=$(echo $getdata | jq --raw-output --arg i "$i" '.data.crt[$i | tonumber].is_self_signed');
+                        if [ $selfsigned = 0 ]
+                                then
+                                        domain=$(echo $getdata | jq --raw-output --arg i "$i" '.data.crt[$i | tonumber].domain');
+                                        echo "$user:$domain";
+                        fi
+                done
+}
+
+
+first=$1
+second=$2
+if [ -z "$first" ] || [  $first = "--help" ] || [  $first = "-h" ]
+        then
+                echo "Usage: ./lrcert [OPTION] [INPUT]"
+                echo "Example: ./lrcert [cPanel username]"
+                echo "Lists non-self-signed certificates for certain user by username or domain or for all users"
+                echo ""
+                echo "Options:"
+                echo "  -d [domain]      Displays all certificates of the owner of the domain."
+                echo "  -a, --all        Lists all certificates of all cPanel users"
+                echo "  -v, --version    Displays version."
+                echo "  -h, --help       This help page."
+                exit
+        elif [ $first = "-v" ] || [  $first = "--version" ]
+                then
+                        echo "lrcert 1.0.0"
+                        echo "Written by Kevin \"nake89\" Kivi"
+        elif [ $first = "-d" ]
+                then
+                        user=$(/scripts/whoowns $second)
+                        listRealCerts $user
+        elif [ $first = "-a" ] || [  $first = "--all" ]
+                then
+                        find /var/cpanel/users | cut -d'/' -f5 > cpanelusers.tmp
+                        trap "echo Loop interrupted; exit;" SIGINT SIGTERM
+                        while read u; do
+                                listRealCerts $u
+                        done <cpanelusers.tmp
+                        rm -f cpanelusers.tmp
+        else
+                listRealCerts $first
+fi
