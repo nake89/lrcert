@@ -24,7 +24,11 @@ yum install jq
 mkdir ~/bin
 cd ~/bin
 echo export PATH=\$PATH:$PWD >> ~/.bashrc
+source ~/.bashrc
+cd ~
 git clone https://github.com/nake89/lrcert
-cd lrcert
+mv lrcert/ .lrcert
+cd .lrcert
 chmod u+x lrcert
+ln -s ~/.lrcert/lrcert ~/bin/lrcert
 ```
