@@ -31,4 +31,5 @@ mv lrcert/ .lrcert
 cd .lrcert
 chmod u+x lrcert
 ln -s ~/.lrcert/lrcert ~/bin/lrcert
+
 ```
