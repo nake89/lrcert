@@ -28,7 +28,7 @@ if [ -z "$first" ] || [  $first = "--help" ] || [  $first = "-h" ]
     exit
   elif [ $first = "-v" ] || [  $first = "--version" ]
     then
-      echo "lrcert 1.0.0"
+      echo "lrcert 1.0.1"
       echo "Written by Kevin \"nake89\" Kivi"
   elif [ $first = "-d" ]
     then
