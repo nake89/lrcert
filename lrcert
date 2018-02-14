@@ -45,3 +45,4 @@ if [ -z "$first" ] || [  $first = "--help" ] || [  $first = "-h" ]
   else
     listRealCerts $first
 fi
+ 
